@@ -6,5 +6,4 @@ def pow(a, b):
     for _ in range(b):
         result *= a
     return result
-result = pow(2, 3)
-print(result)  
+print(pow(2, 2))  
