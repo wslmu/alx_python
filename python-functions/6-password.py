@@ -1,15 +1,18 @@
 def validate_password(password):
-    if len(password) < 8:
-        return False
-    has_uppercase = any(char.isupper() for char in password)
-    has_lowercase = any(char.islower() for char in password)
-    has_digit = any(char.isdigit() for char in password)
+    SpecialSymbol = ["@", "#", "$", " ", "&", "%"]
+    val = True 
 
-    if not (has_uppercase and has_lowercase and has_digit):
+    if len(password) < 8:  
+        return False 
+    if not any(char.isupper() for char in password):
         return False
-    if ' ' in password:
+    if not any(char.islower() for char in password):
         return False
-    return True
-password_to_check = "SecurePass123"
-result = validate_password(password_to_check)
-print(f"The password '{password_to_check}' is valid: {result}")
+    if not any(char.isdigit() for char in password):
+        return False
+    if " " not in password:
+        return True
+    else:
+        return False
+    if val:
+        return val
