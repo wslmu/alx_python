@@ -1,7 +1,8 @@
+"""This is size of a square"""
 class Square:
+    """class of the size of the square"""
     def __init__(self, size):
-        self.size = size
-
-mysquare = Square("size: ")
-
-print(mysquare.size)
+        """
+        The initialization of size
+        """
+        self.__size = size

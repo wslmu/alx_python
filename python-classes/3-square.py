@@ -1,24 +1,41 @@
+"""This is size of a square"""
 class Square:
-    """Simple square class with his size as a field"""
-
+    """class of the size of the square"""
     def __init__(self, size=0):
-        """ Instance the class Square
-            Arguments:
-                @size: the size of every side of the Square,
-                        it must be a positive integer value"""
-        if not isinstance(size, int):
-            raise TypeError("size must be an integer")
-        elif size < 0:
-            raise ValueError("size must be >= 0")
-        else:
-            self.__size = size
+        """
+        The initialization of size
+        """
+        self.__size = size
 
+        if type(size) == int:
+            size
+        else:
+            raise TypeError("size must be an integer")
+        
+        if size < 0:
+            raise ValueError("size must be >= 0")
+        
     def area(self):
-        """ Compute the area of a square
-            with the formula:
-                                area = @size ^ 2 = @size * @size
-            Return:
-                    Power of the Square size to 2
-                    or size multiplicated by size."""
-        return (self.__size ** 2)
+        """
+        area of size
+        """
+        return self.__size ** 2
+
+    @property 
+    def size(self):
+        """
+        getter
+        """
+        return self.__size
     
+    @size.setter
+    def size(self, value):
+        """
+        setter
+        """
+        self.__size = value
+        if type(value) == int:
+            value
+        else:
+            raise TypeError("size must be an integer")
+        
