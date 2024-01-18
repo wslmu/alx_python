@@ -1,37 +1,51 @@
+'''
+ We are obliged to import MYSQLdb and sys modules because:
+ 
+     - MySQLdb: Helps to connect to the MySQL server and interacting with the database
+     - sys: Used to handle command-line arguments and other system-related tasks
+
+Qn:  This program will display all states in states table which is in database hbtn_0_usa
+
+'''
 import MySQLdb
 import sys
 
 def list_states(username, password, database):
-    # Connect to the MySQL server
+    
     db = MySQLdb.connect(host="localhost", port=3306, user=username, passwd=password, db=database)
-
-    # Create a cursor object to interact with the database
     cursor = db.cursor()
-
-    # Executing the query to retrieve the states from the hbtn_0e_0_usa database
     query = "SELECT * FROM states ORDER BY states.id ASC"
     cursor.execute(query)
-
-    # Fetch all the rows
     states = cursor.fetchall()
 
-    # Display the resultss
     for state in states:
         print(state)
 
-    # Close the cursor and database connection
-    cursor.close()
-    db.close()
 
-if __name__ == "__main__":
-    # Check if all three arguments are provided
-    if len(sys.argv) != 4:
-        print("Usage: python script.py <mysql_username> <mysql_password> <database_name>")
+    cursor.close()                                    
+    db.close()                          # Close the database connection
+
+
+
+
+
+
+if __name__ == "__main__":                       # Check if the script is being run directly (not imported)
+    
+    if len(sys.argv) != 4:                       # Check if exactly three command-line arguments(mysql username, mysql password and database name) are provided
+    
+     '''The reason we said 4 instead of 3, is because its the 3 cmd line arguments
+        plus the script name which is script.py. Always add a script name !!
+
+     '''
+         
+     print(": python script.py <mysql_username> <mysql_password> <database_name>")
+
     else:
-        # Extract arguments
+        # If three arguments are provided, extract them
         mysql_username = sys.argv[1]
         mysql_password = sys.argv[2]
         database_name = sys.argv[3]
 
-        # Call the function to list states
+        # Call the list_states function with the extracted arguments to retrieve and print the states
         list_states(mysql_username, mysql_password, database_name)

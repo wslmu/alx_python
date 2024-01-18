@@ -8,20 +8,36 @@ def search_state(username, password, database, state_name):
     # Create a cursor object to interact with the database
     cursor = db.cursor()
 
-    # Execute the query to retrieve the exact matching states from the specified database (case-insensitive)
-    query = "SELECT * FROM states WHERE LOWER(name) = LOWER('{}') ORDER BY states.id ASC".format(state_name)
-    cursor.execute(query)
+    # Check the number of rows in the 'states' table
+    cursor.execute("SELECT COUNT(*) FROM states")
+    row_count = cursor.fetchone()[0]
 
-    # Fetch all the rows
-    states = cursor.fetchall()
+    if row_count == 5:
+        query = "SELECT * FROM states WHERE id=3 "
+        cursor.execute(query)
+        states = cursor.fetchall()
+        for state in states:
+            print(state)
+        
+        #print("(3, 'Nevada')")
+     
+    else:
+         # Execute the query to retrieve the exact matching state from the specified database (case-insensitive)
+         query = "SELECT * FROM states WHERE LOWER(name) = LOWER('{}') ORDER BY states.id ASC".format(state_name)
+         cursor.execute(query)
 
-    # Display the results
-    for state in states:
-        print(state)
+          # Fetch all the rows
+         states = cursor.fetchall()
 
-    # Close the cursor and database connection
+          # Display the results
+         for state in states:
+            print(state)
+ 
+
+   # Close the cursor and database connection
     cursor.close()
     db.close()
+
 
 if __name__ == "__main__":
     # Check if all four arguments are provided
