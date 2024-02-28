@@ -1,44 +1,66 @@
-"""Import the needed modules in alphabetical order"""
+"""
+    This script gathers employee todo data and stores it in JSON format
+"""
+
 import json
 import requests
 import sys
 
-"""This function will take an employee's id as an argument and return a json file with the required details"""
-def get_employee_info(employee_id):
-    """Fetch the employee details from the given url by appending the employee_id and convert the data to json"""
-    employee_url = f'https://jsonplaceholder.typicode.com/users/{employee_id}'
-    employee_response = requests.get(employee_url)
-    employee_data = employee_response.json()
 
-    """fetch the employee's todo by appending the todo route to the url"""
-    todos_url = f'https://jsonplaceholder.typicode.com/users/{employee_id}/todos'
-    todos_response = requests.get(todos_url)
-    todos_data = todos_response.json()
+def save_todo_progress_to_json(id):
+    """
+    fetching employee data
+    """
+    # user details
+    user_url = f"https://jsonplaceholder.typicode.com/users/{id}"
 
-    """create a json file for the employee with required format"""
-    json_file_path = f"{employee_id}.json"
+    # setch user details
+    user_response = requests.get(user_url)
+
+    # check whether user exists
+    if user_response.status_code != 200:
+        print(f"Employee with ID {id} not found.")
+        return
+
+    # parse response to obtain user data
+    user_data = user_response.json()
+    username = user_data["username"]
+
+    # url for tasks
+    tasks_url = f"https://jsonplaceholder.typicode.com/users/{id}/todos"
+
+    # fetch user's tasks
+    tasks_response = requests.get(tasks_url)
+
+    # check whether the tasks were fetched
+    if tasks_response.status_code != 200:
+        print(f"Unable to fetch TODO list for employee with ID {id}.")
+        return
+
+    # parse to obtain data
+    tasks_data = tasks_response.json()
+
+    # creating json data
     json_data = {
-        f"{employee_id}": [
+        str(id): [
             {
-                "task": task['title'],
-                "completed": task['completed'],
-                "username": employee_data['username']
+                "task": todo["title"],
+                "completed": todo["completed"],
+                "username": username,
             }
-            for task in todos_data
+            for todo in tasks_data
         ]
     }
 
-    """Write the json file with the required details"""
-    with open(json_file_path, 'w') as json_file:
-        json.dump(json_data, json_file, indent=2)
-"""Obtain the employees details from the command line using the sys module"""
+    # creating a json file
+    json_filename = f"{id}.json"
+    with open(json_filename, "w") as json_file:
+        json.dump(json_data, json_file, indent=4)
+
+
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python script_name.py employee_id.")
-        sys.exit(1)
+    # get the user id from command-line argument
+    id = int(sys.argv[1])
 
-    """Get the employee id from the second argument"""
-    employee_id = int(sys.argv[1])
-
-    """Call the function with the provided id"""
-    get_employee_info(employee_id)
+    # calling the function to export all data to json file
+    save_todo_progress_to_json(id)
