@@ -1,23 +1,38 @@
 import requests
 import sys
 
-id = sys.argv[1]
+def fetch_employee_data(employee_id):
+    try:
+        # Fetch employee details
+        employee_response = requests.get(f'https://jsonplaceholder.typicode.com/users/{employee_id}')
+        employee_data = employee_response.json()
+        employee_name = employee_data['name']
 
-request_user = requests.get('https://jsonplaceholder.typicode.com/users/'+id)
-request_todos = requests.get('https://jsonplaceholder.typicode.com/users/'+id+'/todos')
+        # Fetch TODO list
+        todo_response = requests.get(f'https://jsonplaceholder.typicode.com/users/{employee_id}/todos')
+        todo_list = todo_response.json()
 
-data_user = request_user.json()
-data_todos = request_todos.json()
+        # Calculate completed tasks
+        completed_tasks = [task for task in todo_list if task['completed']]
 
-completed = 0
+        # Display progress
+        print(f"Employee {employee_name} is done with tasks({len(completed_tasks)}/{len(todo_list)}):")
+        for task in completed_tasks:
+            print(f"\t{task['title']}")  # Ensure one tabulation and one space before the task title
 
-for i in data_todos:
-    if i.get('completed')==True:
-        completed = completed + 1
+    except requests.exceptions.RequestException as e:
+        print(f"Error: {e}")
+        sys.exit(1)
 
-print ('Employee {} is done with tasks({}/{}):'.format(data_user.get('name'), completed,len(data_todos)))
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python3 main_4.py <employee_id>")
+        sys.exit(1)
 
-for item in data_todos:
-    if item.get('completed') == True:
-        print('\t ' + item.get('title')) 
-        
+    employee_id = sys.argv[1]
+
+    if not employee_id.isdigit():
+        print("Error: Employee ID must be an integer.")
+        sys.exit(1)
+
+    fetch_employee_data(employee_id)

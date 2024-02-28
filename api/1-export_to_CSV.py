@@ -1,22 +1,25 @@
-#!/usr/bin/python3
 import csv
+import os
 import requests
-import sys
+from sys import argv
 
-user_id = str(sys.argv[1])
+if __name__ == "__main__":
+    if len(argv) < 2:
+        print("Usage: python3 1-export_to_CSV.py <user_id>")
+        exit(1)
 
-request_user = "https://jsonplaceholder.typicode.com/users/{}".format(user_id)
-request_todos = "https://jsonplaceholder.typicode.com/users/{}/todos".format(user_id)
+    user_id = argv[1]
+    filename = '{}.csv'.format(user_id)
 
-data_user = requests.get(request_user).json()
-data_todos = requests.get(request_todos).json()
+    if not os.path.exists(filename):
+        print(f"Error: File '{filename}' does not exist.")
+        exit(1)
 
-filename = f"{user_id}.csv"
-
-with open(filename, "w", newline="") as file:
-    csvwriter = csv.writer(file, quoting=csv.QUOTE_ALL)
-    for task in data_todos:
-        csvwriter.writerow(
-            [user_id, str(data_user["username"]), task["completed"], task["title"]]
-        )
-        
+    try:
+        with open(filename, 'r') as f:
+            reader = csv.reader(f)
+            num_tasks = sum(1 for row in reader) - 1  # Subtract 1 for the header row
+            print(f"Number of tasks in CSV: {num_tasks}")
+    except FileNotFoundError:
+        print(f"Error: File '{filename}' not found.")
+        exit(1)

@@ -1,67 +1,33 @@
-"""
-    This script gathers employee todo data and stores it in JSON format
-"""
-
+#!/usr/bin/python3
+""" Export to JSON """
 import json
 import requests
-import sys
+from sys import argv
 
 
-def save_todo_progress_to_json(id):
-    """
-    fetching employee data
-    """
-    # user details
-    user_url = f"https://jsonplaceholder.typicode.com/users/{id}"
+if __name__ == '__main__':
+    user_id = argv[1]
+    user_url = 'https://jsonplaceholder.typicode.com/users/{}'.format(user_id)
+    todos_url = 'https://jsonplaceholder.typicode.com/todos?userId={}'.format(user_id)
 
-    # setch user details
     user_response = requests.get(user_url)
+    todos_response = requests.get(todos_url)
 
-    # check whether user exists
-    if user_response.status_code != 200:
-        print(f"Employee with ID {id} not found.")
-        return
-
-    # parse response to obtain user data
     user_data = user_response.json()
-    username = user_data["username"]
+    todos_data = todos_response.json()
 
-    # url for tasks
-    tasks_url = f"https://jsonplaceholder.typicode.com/users/{id}/todos"
+    username = user_data.get('username')
 
-    # fetch user's tasks
-    tasks_response = requests.get(tasks_url)
+    tasks = []
+    for todo in todos_data:
+        task = {
+            "task": todo.get('title'),
+            "completed": todo.get('completed'),
+            "username": username
+        }
+        tasks.append(task)
 
-    # check whether the tasks were fetched
-    if tasks_response.status_code != 200:
-        print(f"Unable to fetch TODO list for employee with ID {id}.")
-        return
+    json_data = {user_id: tasks}
 
-    # parse to obtain data
-    tasks_data = tasks_response.json()
-
-    # creating json data
-    json_data = {
-        str(id): [
-            {
-                "task": todo["title"],
-                "completed": todo["completed"],
-                "username": username,
-            }
-            for todo in tasks_data
-        ]
-    }
-
-    # creating a json file
-    json_filename = f"{id}.json"
-    with open(json_filename, "w") as json_file:
-        json.dump(json_data, json_file, indent=4)
-
-
-if __name__ == "__main__":
-    # get the user id from command-line argument
-    id = int(sys.argv[1])
-
-    # calling the function to export all data to json file
-    save_todo_progress_to_json(id)
-    
+    with open('{}.json'.format(user_id), 'w') as json_file:
+        json.dump(json_data, json_file)
