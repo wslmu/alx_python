@@ -1,38 +1,38 @@
 import requests
 import sys
 
-def fetch_employee_data(employee_id):
-    try:
-        # Fetch employee details
-        employee_response = requests.get(f'https://jsonplaceholder.typicode.com/users/{employee_id}')
-        employee_data = employee_response.json()
-        employee_name = employee_data['name']
+def employee_info(employee_id):
+    """ getting employee details from the given url by appending the employee_id  to the given url"""
+    employee_url = f'https://jsonplaceholder.typicode.com/users/{employee_id}'
+    employee_response = requests.get(employee_url)
+    employee_data = employee_response.json()
 
-        # Fetch TODO list
-        todo_response = requests.get(f'https://jsonplaceholder.typicode.com/users/{employee_id}/todos')
-        todo_list = todo_response.json()
+    """getting employee's todo's by appending the todo path the url"""
+    todos_url = f'https://jsonplaceholder.typicode.com/users/{employee_id}/todos'
+    todos_response = requests.get(todos_url)
+    todos_data = todos_response.json()
 
-        # Calculate completed tasks
-        completed_tasks = [task for task in todo_list if task['completed']]
+ 
+    completed_tasks = [task for task in todos_data if task['completed']]
+    number_of_done_tasks = len(completed_tasks)
+    total_number_of_tasks = len(todos_data)
 
-        # Display progress
-        print(f"Employee {employee_name} is done with tasks({len(completed_tasks)}/{len(todo_list)}):")
-        for task in completed_tasks:
-            print(f"\t{task['title']}")  # Ensure one tabulation and one space before the task title
+    """Display the employee's name and the number of done and total tasks."""
+    print(f"Employee {employee_data['name']} is done with tasks({number_of_done_tasks}/{total_number_of_tasks}):")
 
-    except requests.exceptions.RequestException as e:
-        print(f"Error: {e}")
-        sys.exit(1)
+    """Done tasks."""
+    for task in completed_tasks:
+        print(f"\t {task['title']}")
+
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python3 main_4.py <employee_id>")
+        print("Usage: python script_name.py employee_id.")
         sys.exit(1)
 
-    employee_id = sys.argv[1]
+    """employee id from the second argument"""
+    employee_id = int(sys.argv[1])
 
-    if not employee_id.isdigit():
-        print("Error: Employee ID must be an integer.")
-        sys.exit(1)
-
-    fetch_employee_data(employee_id)
+    """calling the function"""
+    employee_info(employee_id)
